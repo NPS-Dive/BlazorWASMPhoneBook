@@ -1,0 +1,60 @@
+﻿ @page "/ContactList"
+ @inject HttpClient HttpClient
+
+
+
+<h3>Contact List</h3>
+ <div class="row">
+     <p>
+         <a class="btn btn-success" href="/AddContact">Add Contact</a>
+     </p>
+ </div>
+@if (Contacts != null)
+    {
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+               <th>Phone</th>
+                <th>Cell</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in Contacts)
+                {
+                <tr>
+                    <td>@person.FullName</td>
+                   <td>@person.PhoneNumber</td>
+                    <td>@person.CellphoneNumber</td>
+                    <td>@person.Email</td>
+                    <td>
+                        <a class="btn btn-warning" href="/EditContact/@person.ContactID">Edit</a>
+                        <a class="btn btn-info" href="/ContactDetails/@person.ContactID">Details</a>
+                    </td>
+                </tr>
+                }
+        </tbody>
+    </table>
+    }
+else
+    {
+    <div class="alert alert-warning">
+        No Data yet!
+    </div>
+    }
+
+
+@code {
+    private ContactModel[] Contacts;
+}
+ @functions
+ {
+    protected override async Task OnInitializedAsync ()
+        {
+        Contacts = await HttpClient.GetFromJsonAsync<ContactModel[]>("api/ContactModels");
+        }
+
+     
+ }

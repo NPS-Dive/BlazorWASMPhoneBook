@@ -1,0 +1,52 @@
+﻿@page "/ContactDetails/{ContactID:long}"
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+<h3>Contact Details</h3>
+
+<dl>
+    <dt>Full Name:</dt>
+    <dd>@Contact.FullName</dd> 
+    
+    <dt>Phone:</dt>
+    <dd>@Contact.PhoneNumber</dd>    
+    
+    <dt>Cellular:</dt>
+    <dd>@Contact.CellphoneNumber</dd>      
+    
+    <dt>Email:</dt>
+    <dd>@Contact.Email</dd>  
+    
+    <dt>Address:</dt>
+    <dd>@Contact.Address</dd>       
+    
+    <dt></dt>
+    <dd>
+        <a class="btn btn-danger" onclick="@DeleteContact">Delete</a>
+    </dd>
+</dl>
+
+@code {
+
+    [Parameter]
+    public long ContactID { get; set; }
+    public ContactModel Contact = new();
+
+}
+
+@functions
+{
+    protected override async Task OnInitializedAsync ()
+        {
+
+        Contact = await HttpClient.GetFromJsonAsync<ContactModel>($"api/ContactModels/{ContactID}");
+
+        }
+
+    protected async Task DeleteContact()
+    {
+        await HttpClient.DeleteAsync($"/api/ContactModels/{ContactID}");
+        NavigationManager.NavigateTo("/ContactList");
+    }
+}

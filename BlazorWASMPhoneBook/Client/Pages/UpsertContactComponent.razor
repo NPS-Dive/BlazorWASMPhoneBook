@@ -1,0 +1,109 @@
+﻿@page "/AddContact"
+@page "/EditContact/{ContactID:long}"
+
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+
+
+<h3>@PageTitle</h3>
+<EditForm Model="Contact" OnValidSubmit="SaveContact">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label>Name</label>
+        <div class="col-md-4">
+            <InputText @bind-Value="Contact.Name" class="form-control" />
+            <ValidationMessage For="() => Contact.Name" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Last Name</label>
+        <div class="col-md-4">
+            <InputText @bind-Value="Contact.Family" class="form-control" />
+            <ValidationMessage For="() => Contact.Family" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Phone Number</label>
+        <div class="col-md-4">
+            <InputText @bind-Value="Contact.PhoneNumber" class="form-control" />
+            <ValidationMessage For="() => Contact.PhoneNumber" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Cellular</label>
+        <div class="col-md-4">
+            <InputText @bind-Value="Contact.CellphoneNumber" class="form-control" />
+            <ValidationMessage For="() => Contact.CellphoneNumber" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <div class="col-md-4">
+            <InputText @bind-Value="Contact.Email" class="form-control" />
+            <ValidationMessage For="() => Contact.Email" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Address</label>
+        <div class="col-md-4">
+            <InputText @bind-Value="Contact.Address" class="form-control" />
+            <ValidationMessage For="() => Contact.Address" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label></label>
+        <div class="col-md-4">
+            <Input type="submit" value="@PageTitle" class="btn @ButtonColor" />
+
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public long ContactID { get; set; }
+
+    private string PageTitle = "Add a New Contact";
+    private string ButtonColor = "btn-success";
+    public ContactModel Contact = new();
+}
+
+@functions
+{
+    protected override async Task OnInitializedAsync()
+    {
+        if (ContactID != 0)
+        {
+            PageTitle = "Edit Contact";
+            ButtonColor = "btn-warning";
+            Contact = await HttpClient.GetFromJsonAsync<ContactModel>($"api/ContactModels/{ContactID}");
+        }
+        else
+        {
+
+        }
+    }
+
+    protected async Task SaveContact ()
+        {
+        if (ContactID == 0)
+            {
+            await HttpClient.PostAsJsonAsync("/api/ContactModels", Contact);
+            }
+        else
+        {
+            Contact.ContactID = ContactID;
+            await HttpClient.PutAsJsonAsync($"/api/ContactModels/{ContactID}", Contact);
+        }
+
+        NavigationManager.NavigateTo("/ContactList");
+        }
+}
